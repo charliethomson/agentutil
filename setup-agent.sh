@@ -34,12 +34,16 @@ if id "$RUNNER_USER" &>/dev/null; then
 else
   useradd \
     --system \
-    --no-create-home \
+    --create-home \
     --shell /usr/sbin/nologin \
     --comment "GitHub Actions runner service account" \
     "$RUNNER_USER"
   echo "[setup] Created service user: $RUNNER_USER"
 fi
+
+# Ensure home and .docker dirs exist (idempotent; handles pre-existing users too)
+mkdir -p "/home/${RUNNER_USER}/.docker"
+chown -R "${RUNNER_USER}:${RUNNER_USER}" "/home/${RUNNER_USER}"
 
 # ---------------------------------------------------------------------------
 # 2. Create the base install directory, owned by the SSH user
