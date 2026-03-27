@@ -160,7 +160,7 @@ echo "[runner-setup] Configuring runner: \$RUNNER_NAME ..."
   --replace
 
 ${serviceUser ? `echo "[runner-setup] Setting ownership to ${serviceUser} ..."
-sudo chown -R ${serviceUser}:${serviceUser} "$INSTALL_DIR"` : ''}
+sudo runner-fixown "$INSTALL_DIR"` : ''}
 
 ${serviceBlock}
 
