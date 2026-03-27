@@ -45,6 +45,14 @@ fi
 mkdir -p "/home/${RUNNER_USER}/.docker"
 chown -R "${RUNNER_USER}:${RUNNER_USER}" "/home/${RUNNER_USER}"
 
+# Grant Docker socket access
+if getent group docker &>/dev/null; then
+  usermod -aG docker "$RUNNER_USER"
+  echo "[setup] Added $RUNNER_USER to docker group"
+else
+  echo "[setup] Warning: docker group not found — install Docker before running this script" >&2
+fi
+
 # ---------------------------------------------------------------------------
 # 2. Create the base install directory, owned by the SSH user
 #    Subdirectories (one per repo) are created by index.js without sudo.
