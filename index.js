@@ -103,7 +103,7 @@ function buildRemoteScript(owner, repo, token, version, runnerConfig) {
   const repoInstallDir = `${installDir}/${repo}`;
   const repoUrl = `https://github.com/${owner}/${repo}`;
   const labelsStr = labels.join(',');
-  const svcUserFlag = serviceUser ? `--user ${serviceUser}` : '';
+  const svcUserFlag = serviceUser ?? '';
 
   const serviceBlock = runAsService
     ? `
@@ -143,6 +143,13 @@ echo "[runner-setup] Extracting ..."
 tar xzf runner.tar.gz
 rm runner.tar.gz
 
+if [ -f .runner ]; then
+  echo "[runner-setup] Existing runner found — removing before reconfigure ..."
+  sudo ./svc.sh stop 2>/dev/null || true
+  sudo ./svc.sh uninstall 2>/dev/null || true
+  rm -f .runner .credentials .credentials_rsaparams
+fi
+
 echo "[runner-setup] Configuring runner: \$RUNNER_NAME ..."
 ./config.sh \\
   --url "${repoUrl}" \\
@@ -151,6 +158,9 @@ echo "[runner-setup] Configuring runner: \$RUNNER_NAME ..."
   --labels "${labelsStr}" \\
   --unattended \\
   --replace
+
+${serviceUser ? `echo "[runner-setup] Setting ownership to ${serviceUser} ..."
+sudo chown -R ${serviceUser}:${serviceUser} "$INSTALL_DIR"` : ''}
 
 ${serviceBlock}
 
