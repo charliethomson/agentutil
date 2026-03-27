@@ -56,7 +56,7 @@ echo "[setup] Created $INSTALL_BASE (owner: $SSH_USER)"
 FIXOWN_SCRIPT="/usr/local/bin/runner-fixown"
 cat > "$FIXOWN_SCRIPT" <<SCRIPT
 #!/bin/bash
-exec chown -R ${RUNNER_USER}:${RUNNER_USER} ${INSTALL_BASE}/\$1
+exec chown -R ${RUNNER_USER}:${RUNNER_USER} \$1
 SCRIPT
 chmod 755 "$FIXOWN_SCRIPT"
 echo "[setup] Installed $FIXOWN_SCRIPT"
